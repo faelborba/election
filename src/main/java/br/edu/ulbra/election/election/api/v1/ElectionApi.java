@@ -28,11 +28,11 @@ public class ElectionApi {
         return electionService.getAll();
     }
 
-    /*@GetMapping("/year/{year}")
+    @GetMapping("/year/{year}")
     @ApiOperation(value = "Get Election List by year")
     public List<ElectionOutput> getByYear(@PathVariable Integer year){
         return electionService.getByYear(year);
-    }*/
+    }
 
     @GetMapping("/{electionId}")
     @ApiOperation(value = "Get Election by Id")

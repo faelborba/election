@@ -41,20 +41,13 @@ public class ElectionService {
         return modelMapper.map(election,ElectionOutput.class);
     }
 
-    /*public ElectionOutput getByYear(Integer electionYear){
-        if(electionYear == null){
-            throw new GenericOutputException(MESSAGE_INVALID_ID);
-        }
-
-        Election election = electionRepository.findByYear(electionYear).orElse(null);
-        if (election == null){
-            throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
-        }
-
-        return modelMapper.map(election, ElectionOutput.class);
-    }*/
+    public List<ElectionOutput> getByYear(Integer electionYear){
+        Type electionOutputListType = new TypeToken<List<ElectionOutput>>(){}.getType();
+        return modelMapper.map(electionRepository.findByYear(electionYear), electionOutputListType);
+    }
 
     public ElectionOutput getById(Long electionId){
+
         if(electionId == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
