@@ -2,13 +2,10 @@ package br.edu.ulbra.election.election.service;
 
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
-import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.model.Election;
-import br.edu.ulbra.election.election.model.Vote;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
-import br.edu.ulbra.election.election.repository.VoteRepository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -22,16 +19,14 @@ import java.util.List;
 @Service
 public class ElectionService {
     private final ElectionRepository electionRepository;
-    private final VoteRepository voteRepository;
     private final ModelMapper modelMapper;
 
     private static final String MESSAGE_INVALID_ID = "Invalid id";
     private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
 
     @Autowired
-    public ElectionService(ElectionRepository electionRepository, VoteRepository voteRepository, ModelMapper modelMapper){
+    public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper){
         this.electionRepository = electionRepository;
-        this.voteRepository = voteRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -45,11 +40,6 @@ public class ElectionService {
         Election election = modelMapper.map(electionInput, Election.class);
         election = electionRepository.save(election);
         return modelMapper.map(election,ElectionOutput.class);
-    }
-    public VoteInput electionVote(VoteInput voteInput){
-        Vote vote = modelMapper.map(voteInput, Vote.class);
-        vote = voteRepository.save(vote);
-        return modelMapper.map(vote, VoteInput.class);
     }
 
     public List<ElectionOutput> getByYear(Integer electionYear){
