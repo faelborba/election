@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 @Entity
 public class Election {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,4 +49,5 @@ public class Election {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

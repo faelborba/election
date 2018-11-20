@@ -1,5 +1,6 @@
 package br.edu.ulbra.election.election.service;
 
+import br.edu.ulbra.election.election.enums.StateCodes;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.model.Election;
@@ -13,43 +14,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ElectionService {
+
     private final ElectionRepository electionRepository;
     private final ModelMapper modelMapper;
-
-    private static final String MESSAGE_INVALID_ID = "Invalid id";
-    private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
-
+    
     @Autowired
     public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper){
         this.electionRepository = electionRepository;
         this.modelMapper = modelMapper;
     }
 
+
+    private static final String MESSAGE_INVALID_ID = "Invalid id";
+    private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
+
     public List<ElectionOutput> getAll(){
         Type electionOutputListType = new TypeToken<List<ElectionOutput>>(){}.getType();
         return modelMapper.map(electionRepository.findAll(), electionOutputListType);
     }
 
-    public ElectionOutput create(ElectionInput electionInput){
-        this.validateInput(electionInput);
+    public ElectionOutput create(ElectionInput electionInput) {
+        validateInput(electionInput);
+        validateDuplicate(electionInput, null);
         Election election = modelMapper.map(electionInput, Election.class);
         election = electionRepository.save(election);
-        return modelMapper.map(election,ElectionOutput.class);
-    }
-
-    public List<ElectionOutput> getByYear(Integer electionYear){
-        Type electionOutputListType = new TypeToken<List<ElectionOutput>>(){}.getType();
-        return modelMapper.map(electionRepository.findByYear(electionYear), electionOutputListType);
+        return modelMapper.map(election, ElectionOutput.class);
     }
 
     public ElectionOutput getById(Long electionId){
-
-        if(electionId == null){
+        if (electionId == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
 
@@ -61,29 +58,32 @@ public class ElectionService {
         return modelMapper.map(election, ElectionOutput.class);
     }
 
-    public ElectionOutput update(Long electionId, ElectionInput electionInput){
-        if(electionId == null){
-          throw new GenericOutputException(MESSAGE_INVALID_ID);
+    public ElectionOutput update(Long electionId, ElectionInput electionInput) {
+        if (electionId == null){
+            throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
         validateInput(electionInput);
-        Election election = electionRepository.findById(electionId).orElse(null);
+        validateDuplicate(electionInput, electionId);
 
-        if(election==null){
+        Election election = electionRepository.findById(electionId).orElse(null);
+        if (election == null){
             throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
         }
-        election.setDescription(electionInput.getDescription());
+
         election.setStateCode(electionInput.getStateCode());
+        election.setDescription(electionInput.getDescription());
         election.setYear(electionInput.getYear());
         election = electionRepository.save(election);
         return modelMapper.map(election, ElectionOutput.class);
     }
-    public GenericOutput delete(Long electionId){
-        if(electionId == null){
+
+    public GenericOutput delete(Long electionId) {
+        if (electionId == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
 
         Election election = electionRepository.findById(electionId).orElse(null);
-        if(election == null){
+        if (election == null){
             throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
         }
 
@@ -92,74 +92,28 @@ public class ElectionService {
         return new GenericOutput("Election deleted");
     }
 
+    private void validateDuplicate(ElectionInput electionInput, Long id){
+        Election election = electionRepository.findFirstByYearAndStateCodeAndDescription(electionInput.getYear(), electionInput.getStateCode(), electionInput.getDescription());
+        if (election != null && !election.getId().equals(id)){
+            throw new GenericOutputException("Duplicate Code");
+        }
+    }
 
     private void validateInput(ElectionInput electionInput){
-        if(electionInput.getYear() == null){
-            throw new GenericOutputException("Invalid year");
-        }
-
-        if(validateYear(electionInput.getYear())){
-            throw new GenericOutputException("Invalid year");
-        }
-
-        if(StringUtils.isBlank(electionInput.getDescription())){
+        if (StringUtils.isBlank(electionInput.getDescription()) || electionInput.getDescription().length() < 5){
             throw new GenericOutputException("Invalid Description");
         }
-        if(validateDescription(electionInput.getDescription())){
-            throw new GenericOutputException("Invalid Description");
-        }
-
-        if(StringUtils.isBlank(electionInput.getStateCode())){
+        if (StringUtils.isBlank(electionInput.getStateCode())){
             throw new GenericOutputException("Invalid State Code");
         }
-
-        if(validaSatateCode(electionInput.getStateCode())){
+        try {
+             StateCodes.valueOf(electionInput.getStateCode());
+        } catch (IllegalArgumentException e){
             throw new GenericOutputException("Invalid State Code");
         }
-    }
-    private boolean validaSatateCode(String stateCode){
-        ArrayList<String> stateList = new ArrayList<>();
-        stateList.add("AC");
-        stateList.add("AL");
-        stateList.add("AP");
-        stateList.add("BA");
-        stateList.add("CE");
-        stateList.add("DF");
-        stateList.add("ES");
-        stateList.add("GO");
-        stateList.add("MA");
-        stateList.add("MT");
-        stateList.add("MS");
-        stateList.add("MG");
-        stateList.add("PA");
-        stateList.add("PB");
-        stateList.add("PR");
-        stateList.add("PE");
-        stateList.add("PI");
-        stateList.add("RJ");
-        stateList.add("RN");
-        stateList.add("RS");
-        stateList.add("RO");
-        stateList.add("RR");
-        stateList.add("SC");
-        stateList.add("SE");
-        stateList.add("TO");
-        stateList.add("BR");// vai brasiliam
-        if(!stateList.contains(stateCode)){
-            return true;
+        if (electionInput.getYear() == null || electionInput.getYear() < 2000 || electionInput.getYear() > 2200){
+            throw new GenericOutputException("Invalid Year");
         }
-        return false;
     }
-    private boolean validateDescription(String description){
-        if(description.length() < 5){// verificando a quantidade de caracteres
-            return true;
-        }
-        return false;
-    }
-    private boolean validateYear(Integer year){
-        if (year < 2000 || year >2200){
-            return true;
-        }
-        return false;
-    }
+
 }

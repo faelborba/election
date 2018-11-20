@@ -4,18 +4,25 @@ import javax.persistence.*;
 
 @Entity
 public class Vote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long electionId;
-
-    @Column(nullable = false)
+    @Column (nullable = false)
     private Long voterId;
 
-    @Column(nullable = false)
+    @Column (nullable = true)
     private Long candidateId;
+
+    @Column (nullable = false)
+    private Boolean blankVote;
+
+    @Column (nullable = false)
+    private Boolean nullVote;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Election election;
 
     public Long getId() {
         return id;
@@ -23,14 +30,6 @@ public class Vote {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getElectionId() {
-        return electionId;
-    }
-
-    public void setElectionId(Long electionId) {
-        this.electionId = electionId;
     }
 
     public Long getVoterId() {
@@ -47,5 +46,29 @@ public class Vote {
 
     public void setCandidateId(Long candidateId) {
         this.candidateId = candidateId;
+    }
+
+    public Boolean getBlankVote() {
+        return blankVote;
+    }
+
+    public void setBlankVote(Boolean blankVote) {
+        this.blankVote = blankVote;
+    }
+
+    public Boolean getNullVote() {
+        return nullVote;
+    }
+
+    public void setNullVote(Boolean nullVote) {
+        this.nullVote = nullVote;
+    }
+
+    public Election getElection() {
+        return election;
+    }
+
+    public void setElection(Election election) {
+        this.election = election;
     }
 }
