@@ -1,12 +1,16 @@
 package br.edu.ulbra.election.election.service;
 
+import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.enums.StateCodes;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.model.Election;
+import br.edu.ulbra.election.election.model.Vote;
+import br.edu.ulbra.election.election.output.v1.CandidateOutput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
+import br.edu.ulbra.election.election.repository.VoteRepository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -21,11 +25,15 @@ public class ElectionService {
 
     private final ElectionRepository electionRepository;
     private final ModelMapper modelMapper;
+    private final VoteRepository voteRepository;
+    private final CandidateClientService candidateClientService;
     
     @Autowired
-    public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper){
+    public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper, VoteRepository voteRepository, CandidateClientService candidateClientService){
         this.electionRepository = electionRepository;
         this.modelMapper = modelMapper;
+        this.voteRepository = voteRepository;
+        this.candidateClientService = candidateClientService;
     }
 
 
@@ -70,6 +78,21 @@ public class ElectionService {
             throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
         }
 
+        Vote votes =  voteRepository.findByElection_Id(electionId);
+        if(votes != null){
+            throw new GenericOutputException("Election contains votes.");
+        }
+        int i=0;
+        List<CandidateOutput> candidateOutput = candidateClientService.getAll();
+        for (CandidateOutput output : candidateOutput) {
+            if(output.getElectionOutput().getId().equals(electionId)){
+                i++;
+            }
+        }
+        if(i>0){
+            throw new GenericOutputException("Election contains candidates.");
+        }
+
         election.setStateCode(electionInput.getStateCode());
         election.setDescription(electionInput.getDescription());
         election.setYear(electionInput.getYear());
@@ -87,8 +110,23 @@ public class ElectionService {
             throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
         }
 
-        electionRepository.delete(election);
+        Vote votes =  voteRepository.findByElection_Id(electionId);
+        if(votes != null){
+            throw new GenericOutputException("Election contains votes.");
+        }
 
+        int i=0;
+        List<CandidateOutput> candidateOutput = candidateClientService.getAll();
+        for (CandidateOutput output : candidateOutput) {
+            if(output.getElectionOutput().getId().equals(electionId)){
+                i++;
+            }
+        }
+        if(i>0){
+            throw new GenericOutputException("Election contains candidates.");
+        }
+
+        electionRepository.delete(election);//deletando
         return new GenericOutput("Election deleted");
     }
 

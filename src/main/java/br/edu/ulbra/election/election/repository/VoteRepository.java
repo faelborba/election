@@ -4,5 +4,6 @@ import br.edu.ulbra.election.election.model.Vote;
 import org.springframework.data.repository.CrudRepository;
 
 public interface VoteRepository extends CrudRepository<Vote, Long> {
-    Vote findAllByElectionId(Long electionId);
+    Vote findByElection_Id(Long electionId);
+    Vote findVoteByElection_Id(Long electionId);
 }

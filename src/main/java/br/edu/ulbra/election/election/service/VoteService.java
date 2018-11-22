@@ -6,6 +6,7 @@ import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.model.Election;
 import br.edu.ulbra.election.election.model.Vote;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
+import br.edu.ulbra.election.election.output.v1.ResultOutput;
 import br.edu.ulbra.election.election.output.v1.VoterOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.repository.VoteRepository;
@@ -23,6 +24,10 @@ public class VoteService {
     private final ModelMapper modelMapper;
     private final ElectionRepository electionRepository;
     private final VoterClientService voterClientService;
+
+    private static final String MESSAGE_INVALID_ELECTION_ID = "Invalid id";
+    private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
+    private static final String MESSAGE_VOTES_NOT_FOUND = "Votes not found";
 
     @Autowired
     public VoteService(VoteRepository voteRepository, ModelMapper modelMapper, ElectionRepository electionRepository, VoterClientService voterClientService){
