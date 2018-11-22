@@ -5,5 +5,4 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface VoteRepository extends CrudRepository<Vote, Long> {
     Vote findByElection_Id(Long electionId);
-    Vote findVoteByElection_Id(Long electionId);
 }
