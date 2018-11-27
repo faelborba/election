@@ -1,13 +1,13 @@
 package br.edu.ulbra.election.election.service;
 
+import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.client.VoterClientService;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.model.Election;
 import br.edu.ulbra.election.election.model.Vote;
+import br.edu.ulbra.election.election.output.v1.CandidateOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
-import br.edu.ulbra.election.election.output.v1.ResultOutput;
-import br.edu.ulbra.election.election.output.v1.VoterOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.repository.VoteRepository;
 import feign.FeignException;
@@ -24,17 +24,19 @@ public class VoteService {
     private final ModelMapper modelMapper;
     private final ElectionRepository electionRepository;
     private final VoterClientService voterClientService;
+    private final CandidateClientService candidateClientService;
 
     private static final String MESSAGE_INVALID_ELECTION_ID = "Invalid id";
     private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
     private static final String MESSAGE_VOTES_NOT_FOUND = "Votes not found";
 
     @Autowired
-    public VoteService(VoteRepository voteRepository, ModelMapper modelMapper, ElectionRepository electionRepository, VoterClientService voterClientService){
+    public VoteService(VoteRepository voteRepository, ModelMapper modelMapper, ElectionRepository electionRepository, VoterClientService voterClientService, CandidateClientService candidateClientService){
         this.voteRepository = voteRepository;
         this.modelMapper = modelMapper;
         this.electionRepository = electionRepository;
         this.voterClientService = voterClientService;
+        this.candidateClientService = candidateClientService;
     }
 
     public GenericOutput electionVote(VoteInput voteInput){
@@ -49,7 +51,22 @@ public class VoteService {
             vote.setBlankVote(false);
         }
         // TODO: Validate null candidate
-        vote.setNullVote(false);
+        List<CandidateOutput> candidateOutput = candidateClientService.getAll();
+        for (CandidateOutput candidate : candidateOutput) {
+            System.out.println("TESTE "+ candidate.getNumberElection());
+            System.out.println("TESTE "+ voteInput.getCandidateNumber());
+
+            if(candidate.getNumberElection().equals(voteInput.getCandidateNumber())){
+                System.out.println("####ACHOU...");
+                vote.setCandidateId(candidate.getId());
+                vote.setNullVote(false);
+                break;
+            }else{
+                vote.setNullVote(true);
+            }
+        }
+
+
         voteRepository.save(vote);
 
         GenericOutput output = new GenericOutput("OK");
@@ -83,3 +100,4 @@ public class VoteService {
         return election;
     }
 }
+

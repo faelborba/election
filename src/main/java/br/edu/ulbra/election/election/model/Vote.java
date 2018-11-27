@@ -12,7 +12,7 @@ public class Vote {
     @Column (nullable = false)
     private Long voterId;
 
-    @Column (nullable = true)
+    @Column (nullable = false)
     private Long candidateId;
 
     @Column (nullable = false)

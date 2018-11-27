@@ -17,6 +17,14 @@ public class CandidateOutput {
     @ApiModelProperty(notes = "Candidate Party Data")
     private PartyOutput partyOutput;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -31,14 +39,6 @@ public class CandidateOutput {
 
     public void setNumberElection(Long numberElection) {
         this.numberElection = numberElection;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public ElectionOutput getElectionOutput() {
