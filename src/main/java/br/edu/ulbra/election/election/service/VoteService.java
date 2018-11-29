@@ -51,6 +51,7 @@ public class VoteService {
             vote.setBlankVote(false);
         }
         // TODO: Validate null candidate
+        int achou = 0;
         List<CandidateOutput> candidateOutput = candidateClientService.getAll();
         for (CandidateOutput candidate : candidateOutput) {
             System.out.println("TESTE "+ candidate.getNumberElection());
@@ -60,10 +61,13 @@ public class VoteService {
                 System.out.println("####ACHOU...");
                 vote.setCandidateId(candidate.getId());
                 vote.setNullVote(false);
+                achou++;
                 break;
-            }else{
-                vote.setNullVote(true);
             }
+        }
+
+        if(achou == 0){
+            vote.setNullVote(true);
         }
 
 
