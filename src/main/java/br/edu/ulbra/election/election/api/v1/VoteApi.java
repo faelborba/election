@@ -4,7 +4,6 @@ import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +20,19 @@ public class VoteApi {
     }
 
     @PostMapping("/")
-    public GenericOutput electionVote(@RequestBody VoteInput voteInput){
-        return voteService.electionVote(voteInput);
+    public GenericOutput electionVote(@RequestHeader(value = "x-token") String token, @RequestBody VoteInput voteInput){
+        return voteService.electionVote(token, voteInput);
     }
 
     @PostMapping("/multiple")
-    public GenericOutput multipleElectionVote(@RequestBody List<VoteInput> voteInputList){
-        return voteService.multiple(voteInputList);
+    public GenericOutput multipleElectionVote(@RequestHeader(value = "x-token") String token, @RequestBody List<VoteInput> voteInputList){
+        return voteService.multiple(token, voteInputList);
     }
+
+    @GetMapping("/findVotesByVoter/{voterId}")
+    public GenericOutput findVotesByVoter(@PathVariable(name = "voterId") Long voterId){
+        return voteService.findVotesByVoter(voterId);
+    }
+
+
 }

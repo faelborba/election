@@ -100,6 +100,11 @@ public class ElectionService {
         return modelMapper.map(election, ElectionOutput.class);
     }
 
+    public List<ElectionOutput> getByYear(Integer electionYear){
+        Type electionOutputListType = new TypeToken<List<ElectionOutput>>(){}.getType();
+        return modelMapper.map(electionRepository.findByYear(electionYear), electionOutputListType);
+    }
+
     public GenericOutput delete(Long electionId) {
         if (electionId == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);

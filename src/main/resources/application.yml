@@ -31,10 +31,11 @@ liquibase:
 info:
   app:
     name: Election
-    creator-name: Tales Bitelo Viegas
-    creator-email: tales.viegas@ulbra.br
+    creator-name: Rafael Borba dos Santos
+    creator-email: rafael.borba@rede.ulbra.br
 
 url:
+  login-service: 'http://localhost:8081'
   voter-service: 'http://localhost:8081'
   candidate-service: 'http://localhost:8082'
   party-service: 'http://localhost:8083'

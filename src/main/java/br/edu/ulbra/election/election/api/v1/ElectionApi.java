@@ -31,7 +31,7 @@ public class ElectionApi {
     @GetMapping("/year/{year}")
     @ApiOperation(value = "Get election List by year")
     public List<ElectionOutput> getByYear(@PathVariable Integer year){
-        return new ArrayList<>();
+        return electionService.getByYear(year);
     }
 
     @GetMapping("/{electionId}")

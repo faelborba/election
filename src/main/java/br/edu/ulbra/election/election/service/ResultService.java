@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,8 +50,12 @@ public class ResultService {
             }
             total++;
         }
-        /*List<CandidateOutput> candidateOutputs = candidateClientService.getAll();
-        List<ElectionCandidateResultOutput> candidatesResult = null;
+        /*votes = this.voteRepository.findAllByElectionIdAndCandidateId(electionId, candidateId);
+        for (Vote vote : votes) {
+
+        }*/
+        List<CandidateOutput> candidateOutputs = candidateClientService.getAll();
+        List<ElectionCandidateResultOutput> candidatesResult = new ArrayList<>();
         ElectionCandidateResultOutput electionCandidateResultOutput = new ElectionCandidateResultOutput();
         for (CandidateOutput candidate : candidateOutputs) {
             if(candidate.getElectionOutput().getId() == electionId){
@@ -60,7 +65,7 @@ public class ResultService {
                 candidatesResult.add(electionCandidateResultOutput);
             }
         }
-        resultOutput.setCandidates(candidatesResult);*/
+        resultOutput.setCandidates(candidatesResult);
         ElectionOutput electionOutput = modelMapper.map (election, ElectionOutput.class);
         resultOutput.setElection(electionOutput);
         resultOutput.setBlankVotes((long) blankVote);

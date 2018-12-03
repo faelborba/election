@@ -9,8 +9,10 @@ import java.util.List;
 public interface VoteRepository extends CrudRepository<Vote, Long> {
     Vote findByElection_Id(Long electionId);
     List<Vote> findAllByCandidateId(Long candidateId);
+    List<Vote> findAllByElectionIdAndCandidateId(Long electionId, Long candidateId);
     List<Vote> findByElection_IdAndCandidateId(Long electionId, Long candidateId);
     List<Vote> findAllByElection(Election election);
+    //List<Vote> findVotesByVoter(Long voterId);
     Vote findFirstByElection(Election election);
 }
 
